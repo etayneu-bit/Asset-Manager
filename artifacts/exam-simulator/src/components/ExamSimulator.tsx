@@ -15,6 +15,9 @@ function pickRandom<T>(arr: T[], count: number): T[] {
 
 function FaceInHole() {
   const [userImageUrl, setUserImageUrl] = useState<string | null>(null);
+  const [scale, setScale] = useState(0.52);
+  const [posX, setPosX] = useState(18);
+  const [posY, setPosY] = useState(-18);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -33,15 +36,27 @@ function FaceInHole() {
         🎉 כל הכבוד! הכנס את הפנים שלך לחגיגה!
       </p>
 
-      {/* Frame container — square, responsive */}
-      <div className="relative mx-auto w-full max-w-[320px] aspect-square rounded-2xl overflow-hidden border border-emerald-700/40 bg-zinc-800 shadow-xl shadow-emerald-950/30">
-        {/* User photo — behind the frame */}
+      {/* Frame container — square, responsive, clipped */}
+      <div
+        className="relative mx-auto w-full max-w-[320px] aspect-square rounded-2xl border border-emerald-700/40 bg-zinc-800 shadow-xl shadow-emerald-950/30"
+        style={{ overflow: "hidden" }}
+      >
+        {/* User photo layer — behind WIN.png */}
         {userImageUrl ? (
           <img
             src={userImageUrl}
             alt="תמונתך"
-            className="absolute inset-0 w-full h-full object-cover object-center"
-            style={{ zIndex: 1 }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center",
+              transformOrigin: "center center",
+              transform: `translate(${posX}%, ${posY}%) scale(${scale})`,
+              zIndex: 1,
+            }}
           />
         ) : (
           <div
@@ -55,7 +70,7 @@ function FaceInHole() {
           </div>
         )}
 
-        {/* WIN.png foreground frame — on top */}
+        {/* WIN.png foreground — always on top */}
         <img
           src="/win.png"
           alt="מסגרת ניצחון"
@@ -64,7 +79,7 @@ function FaceInHole() {
         />
       </div>
 
-      {/* File picker */}
+      {/* File picker (hidden) */}
       <input
         ref={fileInputRef}
         type="file"
@@ -73,6 +88,8 @@ function FaceInHole() {
         className="hidden"
         onChange={handleFileChange}
       />
+
+      {/* Upload button */}
       <button
         onClick={() => fileInputRef.current?.click()}
         className="w-full py-3.5 rounded-2xl bg-emerald-700/30 hover:bg-emerald-700/50 active:bg-emerald-800/60 border border-emerald-600/50 text-emerald-200 font-bold text-sm transition-all min-h-[48px]"
@@ -80,6 +97,64 @@ function FaceInHole() {
       >
         📸 {userImageUrl ? "החלף תמונה" : "הכנס את הפנים שלך לחגיגה!"}
       </button>
+
+      {/* Positioning sliders — only shown once an image is loaded */}
+      {userImageUrl && (
+        <div className="rounded-2xl border border-zinc-700/60 bg-zinc-900 p-4 space-y-4" dir="rtl">
+          <p className="text-zinc-400 text-xs font-semibold text-center">כוונון מיקום התמונה</p>
+
+          {/* Scale */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs text-zinc-500">
+              <span>🔍 זום</span>
+              <span className="font-mono text-zinc-400">{Math.round(scale * 100)}%</span>
+            </div>
+            <input
+              type="range"
+              min={0.1}
+              max={2.5}
+              step={0.02}
+              value={scale}
+              onChange={(e) => setScale(parseFloat(e.target.value))}
+              className="w-full h-2 rounded-full appearance-none cursor-pointer accent-emerald-500 bg-zinc-700"
+            />
+          </div>
+
+          {/* X position */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs text-zinc-500">
+              <span>↔ שמאל / ימין</span>
+              <span className="font-mono text-zinc-400">{posX > 0 ? `+${posX}` : posX}%</span>
+            </div>
+            <input
+              type="range"
+              min={-100}
+              max={100}
+              step={1}
+              value={posX}
+              onChange={(e) => setPosX(parseInt(e.target.value))}
+              className="w-full h-2 rounded-full appearance-none cursor-pointer accent-emerald-500 bg-zinc-700"
+            />
+          </div>
+
+          {/* Y position */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs text-zinc-500">
+              <span>↕ למעלה / למטה</span>
+              <span className="font-mono text-zinc-400">{posY > 0 ? `+${posY}` : posY}%</span>
+            </div>
+            <input
+              type="range"
+              min={-100}
+              max={100}
+              step={1}
+              value={posY}
+              onChange={(e) => setPosY(parseInt(e.target.value))}
+              className="w-full h-2 rounded-full appearance-none cursor-pointer accent-emerald-500 bg-zinc-700"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
