@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Exercise, upperBodyExercises, lowerBodyExercises } from "../data/exercises";
 import { MultipleChoiceCard, QuestionKey as MCQuestionKey, questions as mcQuestions } from "./MultipleChoiceCard";
 import { OpenEndedCard, QuestionKey as OEQuestionKey, questions as oeQuestions, ExamPhase } from "./OpenEndedCard";
@@ -11,6 +11,77 @@ const PASS_THRESHOLD = 70;
 
 function pickRandom<T>(arr: T[], count: number): T[] {
   return [...arr].sort(() => Math.random() - 0.5).slice(0, count);
+}
+
+function FaceInHole() {
+  const [userImageUrl, setUserImageUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setUserImageUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return url;
+    });
+  }
+
+  return (
+    <div className="space-y-4">
+      <p className="text-emerald-300 font-bold text-base text-center" dir="rtl">
+        🎉 כל הכבוד! הכנס את הפנים שלך לחגיגה!
+      </p>
+
+      {/* Frame container — square, responsive */}
+      <div className="relative mx-auto w-full max-w-[320px] aspect-square rounded-2xl overflow-hidden border border-emerald-700/40 bg-zinc-800 shadow-xl shadow-emerald-950/30">
+        {/* User photo — behind the frame */}
+        {userImageUrl ? (
+          <img
+            src={userImageUrl}
+            alt="תמונתך"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+            style={{ zIndex: 1 }}
+          />
+        ) : (
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center gap-2"
+            style={{ zIndex: 1 }}
+          >
+            <span className="text-5xl opacity-30">🤳</span>
+            <p className="text-zinc-600 text-xs text-center px-4" dir="rtl">
+              בחר תמונה כדי לראות את הפנים שלך כאן
+            </p>
+          </div>
+        )}
+
+        {/* WIN.png foreground frame — on top */}
+        <img
+          src="/win.png"
+          alt="מסגרת ניצחון"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+          style={{ zIndex: 2 }}
+        />
+      </div>
+
+      {/* File picker */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="user"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+      <button
+        onClick={() => fileInputRef.current?.click()}
+        className="w-full py-3.5 rounded-2xl bg-emerald-700/30 hover:bg-emerald-700/50 active:bg-emerald-800/60 border border-emerald-600/50 text-emerald-200 font-bold text-sm transition-all min-h-[48px]"
+        dir="rtl"
+      >
+        📸 {userImageUrl ? "החלף תמונה" : "הכנס את הפנים שלך לחגיגה!"}
+      </button>
+    </div>
+  );
 }
 
 function ScoreScreen({
@@ -28,6 +99,7 @@ function ScoreScreen({
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-4 py-12">
       <div className="max-w-sm w-full space-y-6 text-center">
+        {/* Score card */}
         <div
           className={`rounded-3xl border p-8 space-y-4 ${
             passed
@@ -58,6 +130,14 @@ function ScoreScreen({
           </p>
         </div>
 
+        {/* Easter egg — only on pass */}
+        {passed && (
+          <div className="rounded-3xl border border-emerald-800/40 bg-emerald-950/20 p-5">
+            <FaceInHole />
+          </div>
+        )}
+
+        {/* Action buttons */}
         <div className="space-y-3">
           <button
             onClick={onNewExam}
