@@ -1,0 +1,40 @@
+You are an expert frontend developer. Please build a React web application using Vite and Tailwind CSS. 
+The app is an interactive exam simulator for a fitness instructor certification course. 
+
+### 1. Data Structure (JSON)
+Create a local mock database (array of objects) containing exercises. Each exercise object must include:
+- `id` (string)
+- `name` (string, in Hebrew)
+- `category` (string, either "upper_body" or "lower_body")
+- `solution`: an object containing the correct answers for:
+   - `target_muscle`
+   - `working_joints`
+   - `origin_insertion`
+   - `synergists_antagonists`
+   - `two_cues`
+
+*Please generate 4 real examples in Hebrew (e.g., Squat, Bench Press, Lat Pulldown, Deadlift) so the app works out of the box. I will add the other 46 exercises to the code later.*
+
+### 2. Core Logic
+- **Start Exam:** A button that triggers a function to randomly select exactly 2 exercises from the "upper_body" category and 2 from the "lower_body" category.
+- **State:** Keep track of the currently selected 4 exercises.
+
+### 3. UI / UX Requirements
+- **Theme:** Implement a clean, strict Dark Mode interface (dark gray/black backgrounds, light text) to reduce eye strain. No bright blue lights. 
+- **Layout:** 
+  - A landing view with a prominent "Start Exam Simulation" button.
+  - An exam view showing a list or grid of the 4 randomly selected exercises.
+- **Exercise Card:** For each selected exercise, display:
+  - The name of the exercise as the header.
+  - 5 empty textareas for the student to type their answers to the following questions (in Hebrew):
+    1. מה שריר המטרה?
+    2. אילו מפרקים עובדים?
+    3. אוריגין ואינסרשן של שריר המטרה?
+    4. מה השרירים הסינרגיסטים ואנטגוניסטים?
+    5. אילו 2 דגשים לביצוע?
+- **Self-Grading Mechanism:** Under the 5 textareas in each card, add a "Show Solution" (הצג פתרון) toggle button. When clicked, it should expand and display the correct answers from the `solution` object right below the user's inputs, allowing them to self-grade.
+
+### 4. Technical Constraints
+- Ensure the UI is fully responsive and works well on mobile devices.
+- Use modular React components (e.g., `ExamCard`, `ExamSimulator`).
+- Write clean, modern, functional components using hooks.

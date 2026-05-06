@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Fitness Exam Simulator"
+version = "1.0.0"
+id = "artifacts/exam-simulator"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24261
+
+[services.development]
+run = "pnpm --filter @workspace/exam-simulator run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/exam-simulator", "run", "build" ]
+publicDir = "artifacts/exam-simulator/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24261"
+BASE_PATH = "/"
