@@ -173,8 +173,12 @@ export function ExamSimulator() {
       <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-4 py-12 safe-top safe-bottom">
         <div className="max-w-sm w-full space-y-8">
           <div className="text-center space-y-3">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-zinc-800 border border-zinc-700 mb-1">
-              <span className="text-3xl">🏋️</span>
+            <div className="flex justify-center mb-1">
+              <img
+                src="/yoni.png"
+                alt="מדריך כושר"
+                className="w-24 h-24 rounded-2xl object-cover object-top shadow-lg border border-zinc-700/60"
+              />
             </div>
             <h1 className="text-3xl font-extrabold text-white tracking-tight" dir="rtl">
               סימולטור מבחן
