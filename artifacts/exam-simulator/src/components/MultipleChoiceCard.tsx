@@ -109,9 +109,9 @@ export function MultipleChoiceCard({ exercise, index, submitted, answers, onAnsw
                   <button
                     key={oi}
                     dir="rtl"
-                    disabled={submitted || !!chosen}
+                    disabled={submitted}
                     onClick={() => {
-                      if (!submitted && !chosen) onAnswer(q.key, option);
+                      if (!submitted) onAnswer(q.key, option);
                     }}
                     className={`w-full text-right px-4 py-3 rounded-xl border text-sm leading-relaxed transition-all duration-150 flex items-start gap-3 ${getOptionStyle(q.key, option)}`}
                   >
