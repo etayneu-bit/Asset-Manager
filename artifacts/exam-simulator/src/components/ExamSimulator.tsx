@@ -3,6 +3,82 @@ import { Exercise, upperBodyExercises, lowerBodyExercises } from "../data/exerci
 import { MultipleChoiceCard, QuestionKey as MCQuestionKey, questions as mcQuestions } from "./MultipleChoiceCard";
 import { OpenEndedCard, QuestionKey as OEQuestionKey, questions as oeQuestions, ExamPhase } from "./OpenEndedCard";
 
+// ── MC Review ──────────────────────────────────────────────────────────────
+function MCReview({
+  exercises,
+  answers,
+}: {
+  exercises: Exercise[];
+  answers: Record<string, Record<string, string>>;
+}) {
+  return (
+    <div className="space-y-4 text-right" dir="rtl">
+      <h2 className="text-white font-bold text-lg">סקירת תשובות</h2>
+      {exercises.map((exercise, ei) => {
+        const exAnswers = answers[exercise.id] ?? {};
+        return (
+          <div key={exercise.id} className="bg-zinc-900 border border-zinc-700/60 rounded-2xl overflow-hidden">
+            {/* Exercise header */}
+            <div className="px-4 py-3 border-b border-zinc-700/60 flex items-center gap-2">
+              <span className="text-zinc-600 font-mono text-xs shrink-0">#{ei + 1}</span>
+              <h3 className="text-white font-bold text-sm">{exercise.name}</h3>
+            </div>
+
+            {/* Questions */}
+            <div className="divide-y divide-zinc-800">
+              {mcQuestions.map((q, qi) => {
+                const chosen = exAnswers[q.key];
+                const correct = exercise.solution[q.key];
+                const isRight = chosen === correct;
+                return (
+                  <div key={q.key} className="px-4 py-3 space-y-2">
+                    {/* Question label */}
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                          isRight
+                            ? "bg-emerald-700/50 text-emerald-300"
+                            : "bg-red-800/50 text-red-300"
+                        }`}
+                      >
+                        {qi + 1}
+                      </span>
+                      <p className="text-zinc-400 text-xs font-semibold flex-1">{q.label}</p>
+                      <span className="text-base">{isRight ? "✓" : "✗"}</span>
+                    </div>
+
+                    {/* User's answer */}
+                    <div
+                      className={`rounded-xl px-3 py-2 text-xs leading-relaxed border ${
+                        isRight
+                          ? "bg-emerald-900/30 border-emerald-700/50 text-emerald-200"
+                          : "bg-red-900/30 border-red-700/50 text-red-200"
+                      }`}
+                    >
+                      <span className="text-zinc-500 block mb-0.5 text-[10px]">
+                        {isRight ? "תשובתך (נכון)" : "תשובתך (שגוי)"}
+                      </span>
+                      {chosen ?? <span className="italic text-zinc-600">לא נענה</span>}
+                    </div>
+
+                    {/* Correct answer — only shown when wrong */}
+                    {!isRight && (
+                      <div className="rounded-xl px-3 py-2 text-xs leading-relaxed border bg-emerald-900/20 border-emerald-700/40 text-emerald-200">
+                        <span className="text-emerald-500 block mb-0.5 text-[10px]">התשובה הנכונה</span>
+                        {correct}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 type ExamMode = "open" | "multiple_choice";
 type AppPhase = "landing" | "taking" | "reviewing" | "scored";
 
@@ -164,19 +240,24 @@ function ScoreScreen({
   onReset,
   onNewExam,
   examMode,
+  exercises,
+  mcAnswers,
 }: {
   score: number;
   onReset: () => void;
   onNewExam: () => void;
   examMode: ExamMode;
+  exercises: Exercise[];
+  mcAnswers: Record<string, Record<string, string>>;
 }) {
   const passed = score >= PASS_THRESHOLD;
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
-      <div className="max-w-sm w-full space-y-6 text-center">
+    <div className="min-h-screen px-4 py-10 safe-top safe-bottom">
+      <div className="max-w-xl mx-auto space-y-6">
+
         {/* Score card */}
         <div
-          className={`rounded-3xl border p-8 space-y-4 ${
+          className={`rounded-3xl border p-8 space-y-4 text-center ${
             passed
               ? "bg-emerald-950/40 border-emerald-700/50"
               : "bg-red-950/40 border-red-800/50"
@@ -212,8 +293,13 @@ function ScoreScreen({
           </div>
         )}
 
+        {/* MC answer review */}
+        {examMode === "multiple_choice" && exercises.length > 0 && (
+          <MCReview exercises={exercises} answers={mcAnswers} />
+        )}
+
         {/* Action buttons */}
-        <div className="space-y-3">
+        <div className="space-y-3 pb-10">
           <button
             onClick={onNewExam}
             className="w-full py-4 rounded-2xl bg-indigo-700 hover:bg-indigo-600 active:bg-indigo-800 text-white font-bold text-base transition-colors min-h-[52px]"
@@ -400,6 +486,8 @@ export function ExamSimulator() {
         examMode={examMode}
         onReset={resetToLanding}
         onNewExam={() => startExam(examMode)}
+        exercises={selectedExercises}
+        mcAnswers={allAnswers}
       />
     );
   }
