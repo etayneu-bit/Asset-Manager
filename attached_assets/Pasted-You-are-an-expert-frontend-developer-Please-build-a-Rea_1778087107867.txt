@@ -1,0 +1,33 @@
+You are an expert frontend developer. Please build a React web application using Vite and Tailwind CSS.
+The app is an interactive exam simulator for a fitness instructor certification course.
+
+### 1. Data Structure (JSON)
+Create a local mock database (array of objects) containing exercises. Each exercise object must include:
+- `id` (string)
+- `name` (string, in Hebrew)
+- `category` (string, either "upper_body" or "lower_body")
+- `solution`: an object containing the correct string answers for:
+   - `target_muscle`
+   - `working_joints`
+   - `origin_insertion`
+   - `synergists_antagonists`
+   - `two_cues`
+- `multiple_choice_options`: an object containing an array of 4 strings (1 correct answer, 3 plausible distractors in Hebrew) for EACH of the 5 categories mentioned above.
+
+*Please generate 4 real exercise examples in Hebrew (e.g., Squat, Bench Press) with complete solutions and mock distractors so the app works out of the box.*
+
+### 2. Core Logic
+- **Landing Page:** Display two distinct buttons to start the exam:
+  1. "Start Open-Ended Exam" (מבחן פתוח)
+  2. "Start Multiple-Choice Exam" (מבחן אמריקאי)
+- **Random Selection:** Clicking either button should randomly select exactly 2 exercises from the "upper_body" category and 2 from the "lower_body" category, and set the `examMode` state accordingly.
+
+### 3. UI / UX Requirements
+- **Theme:** Implement a strict, pure Dark Mode interface (deep blacks, warm dark grays, light text). Avoid any bright colors or UI elements that emit blue light to minimize eye strain during night studying.
+- **Mobile Optimization:** Ensure the layout is highly responsive and specifically optimized for modern mobile screens, respecting safe areas and touch-target sizes (e.g., iPhone 15 Pro dimensions).
+- **Open-Ended Mode UI:** For each exercise, display 5 empty textareas for the student to type their answers to the 5 questions (in Hebrew). Include a "Show Solution" (הצג פתרון) toggle at the bottom to expand and reveal the correct answers.
+- **Multiple-Choice Mode UI:** For each exercise, display the 5 questions. Under each question, render 4 clickable option cards based on the `multiple_choice_options` array (randomize the order of these 4 options so the correct one isn't always in the same spot). When the user clicks an option, immediately provide visual feedback (e.g., green background for correct, red for incorrect).
+
+### 4. Technical Constraints
+- Use modular React components (e.g., `LandingView`, `OpenEndedCard`, `MultipleChoiceCard`).
+- Write clean, modern, functional components using React hooks.
