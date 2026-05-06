@@ -338,7 +338,7 @@ export function ExamSimulator() {
             <h1 className="text-3xl font-extrabold text-white tracking-tight" dir="rtl">
               סימולטור מבחן מסכם
             </h1>
-            <p className="text-zinc-500 text-base" dir="rtl">קורס הכשרת מדריכי כושר</p>
+            <p className="text-zinc-500 text-base" dir="rtl">קורס הכשרת מדריכי חדר כושר</p>
           </div>
 
           <div className="bg-zinc-900 border border-zinc-700/60 rounded-2xl p-5 space-y-3" dir="rtl">
