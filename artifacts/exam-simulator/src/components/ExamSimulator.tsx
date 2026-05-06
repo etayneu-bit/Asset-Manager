@@ -3,84 +3,8 @@ import { Exercise, upperBodyExercises, lowerBodyExercises } from "../data/exerci
 import { MultipleChoiceCard, QuestionKey as MCQuestionKey, questions as mcQuestions } from "./MultipleChoiceCard";
 import { OpenEndedCard, QuestionKey as OEQuestionKey, questions as oeQuestions, ExamPhase } from "./OpenEndedCard";
 
-// ── MC Review ──────────────────────────────────────────────────────────────
-function MCReview({
-  exercises,
-  answers,
-}: {
-  exercises: Exercise[];
-  answers: Record<string, Record<string, string>>;
-}) {
-  return (
-    <div className="space-y-4 text-right" dir="rtl">
-      <h2 className="text-white font-bold text-lg">סקירת תשובות</h2>
-      {exercises.map((exercise, ei) => {
-        const exAnswers = answers[exercise.id] ?? {};
-        return (
-          <div key={exercise.id} className="bg-zinc-900 border border-zinc-700/60 rounded-2xl overflow-hidden">
-            {/* Exercise header */}
-            <div className="px-4 py-3 border-b border-zinc-700/60 flex items-center gap-2">
-              <span className="text-zinc-600 font-mono text-xs shrink-0">#{ei + 1}</span>
-              <h3 className="text-white font-bold text-sm">{exercise.name}</h3>
-            </div>
-
-            {/* Questions */}
-            <div className="divide-y divide-zinc-800">
-              {mcQuestions.map((q, qi) => {
-                const chosen = exAnswers[q.key];
-                const correct = exercise.solution[q.key];
-                const isRight = chosen === correct;
-                return (
-                  <div key={q.key} className="px-4 py-3 space-y-2">
-                    {/* Question label */}
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
-                          isRight
-                            ? "bg-emerald-700/50 text-emerald-300"
-                            : "bg-red-800/50 text-red-300"
-                        }`}
-                      >
-                        {qi + 1}
-                      </span>
-                      <p className="text-zinc-400 text-xs font-semibold flex-1">{q.label}</p>
-                      <span className="text-base">{isRight ? "✓" : "✗"}</span>
-                    </div>
-
-                    {/* User's answer */}
-                    <div
-                      className={`rounded-xl px-3 py-2 text-xs leading-relaxed border ${
-                        isRight
-                          ? "bg-emerald-900/30 border-emerald-700/50 text-emerald-200"
-                          : "bg-red-900/30 border-red-700/50 text-red-200"
-                      }`}
-                    >
-                      <span className="text-zinc-500 block mb-0.5 text-[10px]">
-                        {isRight ? "תשובתך (נכון)" : "תשובתך (שגוי)"}
-                      </span>
-                      {chosen ?? <span className="italic text-zinc-600">לא נענה</span>}
-                    </div>
-
-                    {/* Correct answer — only shown when wrong */}
-                    {!isRight && (
-                      <div className="rounded-xl px-3 py-2 text-xs leading-relaxed border bg-emerald-900/20 border-emerald-700/40 text-emerald-200">
-                        <span className="text-emerald-500 block mb-0.5 text-[10px]">התשובה הנכונה</span>
-                        {correct}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 type ExamMode = "open" | "multiple_choice";
-type AppPhase = "landing" | "taking" | "reviewing" | "scored";
+type AppPhase = "landing" | "taking" | "reviewing" | "scored" | "mc_review";
 
 const POINTS_PER_QUESTION = 5;
 const PASS_THRESHOLD = 70;
@@ -240,20 +164,18 @@ function ScoreScreen({
   onReset,
   onNewExam,
   examMode,
-  exercises,
-  mcAnswers,
+  onReviewMistakes,
 }: {
   score: number;
   onReset: () => void;
   onNewExam: () => void;
   examMode: ExamMode;
-  exercises: Exercise[];
-  mcAnswers: Record<string, Record<string, string>>;
+  onReviewMistakes: () => void;
 }) {
   const passed = score >= PASS_THRESHOLD;
   return (
-    <div className="min-h-screen px-4 py-10 safe-top safe-bottom">
-      <div className="max-w-xl mx-auto space-y-6">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 safe-top safe-bottom">
+      <div className="max-w-sm w-full space-y-6">
 
         {/* Score card */}
         <div
@@ -293,22 +215,28 @@ function ScoreScreen({
           </div>
         )}
 
-        {/* MC answer review */}
-        {examMode === "multiple_choice" && exercises.length > 0 && (
-          <MCReview exercises={exercises} answers={mcAnswers} />
-        )}
-
         {/* Action buttons */}
-        <div className="space-y-3 pb-10">
+        <div className="space-y-3 pb-6">
+          {examMode === "multiple_choice" && (
+            <button
+              onClick={onReviewMistakes}
+              className="w-full py-4 rounded-2xl bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white font-bold text-base transition-colors border border-zinc-600 min-h-[52px]"
+              dir="rtl"
+            >
+              🔍 צפה בתשובות ובטעויות
+            </button>
+          )}
           <button
             onClick={onNewExam}
             className="w-full py-4 rounded-2xl bg-indigo-700 hover:bg-indigo-600 active:bg-indigo-800 text-white font-bold text-base transition-colors min-h-[52px]"
+            dir="rtl"
           >
             🔀 מבחן חדש עם תרגילים אחרים
           </button>
           <button
             onClick={onReset}
-            className="w-full py-4 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold text-base transition-colors border border-zinc-600 min-h-[52px]"
+            className="w-full py-4 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 font-semibold text-base transition-colors border border-zinc-700/60 min-h-[52px]"
+            dir="rtl"
           >
             ← חזור לדף הבית
           </button>
@@ -486,9 +414,88 @@ export function ExamSimulator() {
         examMode={examMode}
         onReset={resetToLanding}
         onNewExam={() => startExam(examMode)}
-        exercises={selectedExercises}
-        mcAnswers={allAnswers}
+        onReviewMistakes={() => {
+          setAppPhase("mc_review");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
       />
+    );
+  }
+
+  // ── MC REVIEW ─────────────────────────────────────────────────────────────
+  if (appPhase === "mc_review") {
+    const correctCount = selectedExercises.reduce((acc, ex) => {
+      return acc + mcQuestions.filter((q) => (allAnswers[ex.id] ?? {})[q.key] === ex.solution[q.key]).length;
+    }, 0);
+    const wrongCount = selectedExercises.length * mcQuestions.length - correctCount;
+
+    return (
+      <div className="min-h-screen py-6 px-4 safe-top safe-bottom">
+        <div className="max-w-2xl mx-auto space-y-5">
+
+          {/* Header */}
+          <div className="flex items-center justify-between gap-3 py-1">
+            <button
+              onClick={() => {
+                setAppPhase("scored");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="text-sm text-zinc-500 hover:text-zinc-200 transition-colors flex items-center gap-1.5 min-h-[44px] px-1"
+            >
+              <span>←</span>
+              <span>חזרה לציון</span>
+            </button>
+            <div className="text-right" dir="rtl">
+              <h1 className="text-white font-bold text-base leading-tight">🔍 סקירת תשובות</h1>
+              <p className="text-zinc-500 text-xs">
+                <span className="text-emerald-400 font-semibold">{correctCount} נכון</span>
+                {" · "}
+                <span className="text-red-400 font-semibold">{wrongCount} שגוי</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Legend */}
+          <div className="rounded-xl bg-zinc-900 border border-zinc-700/60 px-4 py-3 flex items-center justify-end gap-5" dir="rtl">
+            <span className="flex items-center gap-1.5 text-xs text-emerald-300">
+              <span className="w-3 h-3 rounded-sm bg-emerald-700/70 border border-emerald-600 inline-block" />
+              תשובה נכונה
+            </span>
+            <span className="flex items-center gap-1.5 text-xs text-red-300">
+              <span className="w-3 h-3 rounded-sm bg-red-800/70 border border-red-600 inline-block" />
+              תשובתך (שגוי)
+            </span>
+          </div>
+
+          {/* Cards — locked/submitted mode */}
+          <div className="grid gap-5">
+            {selectedExercises.map((exercise, index) => (
+              <MultipleChoiceCard
+                key={exercise.id}
+                exercise={exercise}
+                index={index}
+                submitted={true}
+                answers={allAnswers[exercise.id] ?? {}}
+                onAnswer={() => {}}
+              />
+            ))}
+          </div>
+
+          {/* Bottom back button */}
+          <div className="pb-10 pt-2">
+            <button
+              onClick={() => {
+                setAppPhase("scored");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="w-full py-4 rounded-2xl bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-white font-bold text-base transition-colors border border-zinc-600 min-h-[52px]"
+              dir="rtl"
+            >
+              ← חזרה לציון
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -553,7 +560,7 @@ export function ExamSimulator() {
                 key={exercise.id}
                 exercise={exercise}
                 index={index}
-                submitted={appPhase === "scored"}
+                submitted={false}
                 answers={allAnswers[exercise.id] ?? {}}
                 onAnswer={(qKey, answer) => handleAnswer(exercise.id, qKey as MCQuestionKey, answer)}
               />
