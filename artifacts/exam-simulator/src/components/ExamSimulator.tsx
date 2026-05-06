@@ -33,7 +33,7 @@ function FaceInHole() {
   return (
     <div className="space-y-4">
       <p className="text-emerald-300 font-bold text-base text-center" dir="rtl">
-        🎉 כל הכבוד! הכנס את הפנים שלך לחגיגה!
+      מהמם! עברת את המבחן!!! הכנס את הפנים שלך לקבלת התעודה.
       </p>
 
       {/* Frame container — square, responsive, clipped */}
@@ -172,7 +172,7 @@ function ScoreScreen({
 }) {
   const passed = score >= PASS_THRESHOLD;
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
       <div className="max-w-sm w-full space-y-6 text-center">
         {/* Score card */}
         <div
@@ -325,7 +325,7 @@ export function ExamSimulator() {
   // ── LANDING ──────────────────────────────────────────────────────────────
   if (appPhase === "landing") {
     return (
-      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-4 py-12 safe-top safe-bottom">
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 safe-top safe-bottom">
         <div className="max-w-sm w-full space-y-8">
           <div className="text-center space-y-3">
             <div className="flex justify-center mb-1">
@@ -336,7 +336,7 @@ export function ExamSimulator() {
               />
             </div>
             <h1 className="text-3xl font-extrabold text-white tracking-tight" dir="rtl">
-              סימולטור מבחן
+              סימולטור מבחן מסכם
             </h1>
             <p className="text-zinc-500 text-base" dir="rtl">קורס הכשרת מדריכי כושר</p>
           </div>
@@ -410,7 +410,7 @@ export function ExamSimulator() {
   const isReviewing = appPhase === "reviewing";
 
   return (
-    <div className="min-h-screen bg-zinc-950 py-6 px-4 safe-top safe-bottom">
+    <div className="min-h-screen py-6 px-4 safe-top safe-bottom">
       <div className="max-w-2xl mx-auto space-y-5">
 
         {/* Header */}
